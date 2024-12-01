@@ -1,45 +1,86 @@
-// Sample Data
-const labels = ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5"];
-const jobRequirements = [80, 90, 70, 60, 50]; // Job requirements percentage
-const candidateSkills = [70, 85, 65, 40, 60]; // Candidate match percentage
+// Handle Form Submission
+document.getElementById("resumeForm").addEventListener("submit", function (event) {
+  event.preventDefault();
 
-const data = {
-  labels: labels,
-  datasets: [
-    {
-      label: "Job Requirements",
-      data: jobRequirements,
-      backgroundColor: "rgba(54, 162, 235, 0.5)",
-      borderColor: "rgba(54, 162, 235, 1)",
-      borderWidth: 1,
-    },
-    {
-      label: "Candidate Skills",
-      data: candidateSkills,
-      backgroundColor: "rgba(75, 192, 192, 0.5)",
-      borderColor: "rgba(75, 192, 192, 1)",
-      borderWidth: 1,
-    },
-  ],
-};
+  const fileInput = document.getElementById("resumeUpload").files[0];
+  const jobRole = document.getElementById("jobRole").value;
 
-const config = {
-  type: "bar", // Change to "line" for a line chart
-  data: data,
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top",
+  if (!fileInput || !jobRole) {
+    alert("Please upload a resume and specify a job role.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("resume", fileInput);
+  formData.append("jobRole", jobRole);
+
+  fetch("/upload", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      updateResults(data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("An error occurred while processing the resume.");
+    });
+});
+
+// Update Results
+function updateResults(data) {
+  // Update Basic Info
+  document.getElementById("name").innerText = data.name || "N/A";
+  document.getElementById("email").innerText = data.email || "N/A";
+  document.getElementById("parsedJobRole").innerText = data.jobRole || "N/A";
+  document.getElementById("age").innerText = data.age || "N/A";
+
+  // Update Score
+  document.getElementById("candidateScore").innerText = data.score || "N/A";
+
+  // Update Verdict
+  const verdictMessage = data.score >= 70 ? "Candidate is Selected!" : "Candidate is Not Selected.";
+  document.getElementById("resultMessage").innerText = verdictMessage;
+
+  // Generate Graph
+  createGraph(data.skills, data.jobRequirements);
+}
+
+// Generate Graph
+function createGraph(candidateSkills, jobRequirements) {
+  const labels = Object.keys(candidateSkills);
+  const candidateData = Object.values(candidateSkills);
+  const jobData = Object.values(jobRequirements);
+
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: "Candidate Skills",
+        data: candidateData,
+        backgroundColor: "rgba(75, 192, 192, 0.5)",
+        borderColor: "rgba(75, 192, 192, 1)",
       },
-      title: {
-        display: true,
-        text: "Candidate Skills vs. Job Requirements",
+      {
+        label: "Job Requirements",
+        data: jobData,
+        backgroundColor: "rgba(54, 162, 235, 0.5)",
+        borderColor: "rgba(54, 162, 235, 1)",
+      },
+    ],
+  };
+
+  const ctx = document.getElementById("resultGraph").getContext("2d");
+  new Chart(ctx, {
+    type: "bar",
+    data: data,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "top" },
+        title: { display: true, text: "Candidate Skills vs Job Requirements" },
       },
     },
-  },
-};
-
-// Render Chart
-const ctx = document.getElementById("resultGraph").getContext("2d");
-new Chart(ctx, config);
+  });
+}
