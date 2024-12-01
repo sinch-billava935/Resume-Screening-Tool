@@ -5,7 +5,11 @@ venv/
 # Ignore Python bytecode files
 __pycache__/
 *.pyc
-
+#ingnore venv
+venv/
 # Ignore IDE/editor-specific files
 .vscode/
 .idea/
+git add .gitignore
+git commit -m "Add .gitignore to ignore virtual environment and unnecessary files"
+git push origin master
