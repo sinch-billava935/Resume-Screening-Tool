@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Resume Screening Tool</title>
-  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
-
 </head>
 <body>
   <header>
@@ -20,32 +20,54 @@
   </header>
 
   <main>
+    <!-- Upload Section -->
     <section id="upload">
       <h2>Upload Resume</h2>
-      <form action="#" method="POST" enctype="multipart/form-data">
+      <form action="/analyze" method="POST" enctype="multipart/form-data">
+        <label for="resume">Select Resume:</label>
         <input type="file" name="resume" accept=".pdf,.docx,.txt" required>
+        <label for="job_role">Job Role:</label>
+        <input type="text" name="job_role" placeholder="Enter desired job role" required>
         <button type="submit">Upload and Analyze</button>
-      </form>
+    </form>
+    
     </section>
 
+    <!-- Results Section -->
     <section id="results">
       <h2>Analysis Results</h2>
-      <div id="basic-info">
-        <h3>Basic Info</h3>
-        <p>Details will appear here...</p>
-      </div>
-      <div id="graph">
-        <h3>Qualification vs. Job Requirements</h3>
-        <canvas id="resultGraph" width="400" height="200"></canvas>
-      </div>
-      
 
+      <!-- Parsed Basic Info -->
+      <div id="basic-info">
+        <h3>Basic Information</h3>
+        <p><strong>Name:</strong> <span id="name">N/A</span></p>
+        <p><strong>Email:</strong> <span id="email">N/A</span></p>
+        <p><strong>Job Role:</strong> <span id="parsedJobRole">N/A</span></p>
+        <p><strong>Age:</strong> <span id="age">N/A</span></p>
+      </div>
+
+      <!-- Graph Visualization -->
+      <div id="graph">
+        <h3>Qualifications vs Job Requirements</h3>
+        <canvas id="resultGraph"></canvas>
+      </div>
+
+      <!-- Candidate Score -->
+      <div id="score">
+        <h3>Score: <span id="candidateScore">N/A</span>/100</h3>
+      </div>
+
+      <!-- Final Verdict -->
+      <div id="verdict">
+        <h3 id="resultMessage">Verdict will appear here...</h3>
+      </div>
     </section>
   </main>
 
   <footer>
     <p>© 2024 Resume Screening Tool | Designed by Team</p>
   </footer>
-  <script src="/static/js/script.js"></script>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
