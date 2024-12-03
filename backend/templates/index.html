@@ -6,9 +6,9 @@
   <title>Resume Screening Tool</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
 </head>
 <body>
   <header>
@@ -23,14 +23,13 @@
     <!-- Upload Section -->
     <section id="upload">
       <h2>Upload Resume</h2>
-      <form action="/analyze" method="POST" enctype="multipart/form-data">
+      <form id="uploadForm" enctype="multipart/form-data">
         <label for="resume">Select Resume:</label>
-        <input type="file" name="resume" accept=".pdf,.docx,.txt" required>
+        <input type="file" name="resume" id="resume" accept=".docx" required>
         <label for="job_role">Job Role:</label>
-        <input type="text" name="job_role" placeholder="Enter desired job role" required>
+        <input type="text" name="job_role" id="job_role" placeholder="Enter desired job role" required>
         <button type="submit">Upload and Analyze</button>
-    </form>
-    
+      </form>
     </section>
 
     <!-- Results Section -->
@@ -43,13 +42,13 @@
         <p><strong>Name:</strong> <span id="name">N/A</span></p>
         <p><strong>Email:</strong> <span id="email">N/A</span></p>
         <p><strong>Job Role:</strong> <span id="parsedJobRole">N/A</span></p>
-        <p><strong>Age:</strong> <span id="age">N/A</span></p>
+        <p><strong>Phone:</strong> <span id="phone">N/A</span></p> <!-- Display phone number -->
       </div>
 
-      <!-- Graph Visualization -->
-      <div id="graph">
-        <h3>Qualifications vs Job Requirements</h3>
-        <canvas id="resultGraph"></canvas>
+      <!-- Skills Section -->
+      <div id="skills">
+        <h3>Skills</h3>
+        <p><span id="skills-list">N/A</span></p> <!-- Display skills -->
       </div>
 
       <!-- Candidate Score -->
@@ -69,5 +68,47 @@
   </footer>
 
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      var formData = new FormData();
+      var resumeFile = document.getElementById('resume').files[0];
+      var jobRole = document.getElementById('job_role').value;
+
+      formData.append('resume', resumeFile);
+      formData.append('job_role', jobRole);
+
+      fetch('/analyze', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert('Error: ' + data.error);
+        } else {
+          // Populate the parsed information into the frontend
+          document.getElementById('name').textContent = data.name || 'N/A';
+          document.getElementById('email').textContent = data.email || 'N/A';
+          document.getElementById('parsedJobRole').textContent = data.job_role || 'N/A';
+          document.getElementById('phone').textContent = data.phone || 'N/A';  // Display phone number
+          
+          // Display skills
+          document.getElementById('skills-list').textContent = data.skills ? data.skills.join(', ') : 'N/A';  // Display skills
+
+          // Calculate and display score (this can be customized based on your model logic)
+          var score = data.score || 0;
+          document.getElementById('candidateScore').textContent = score + "/100";
+
+          // Display verdict based on score
+          document.getElementById('resultMessage').textContent = score >= 75 ? 'Selected' : 'Not Selected';
+        }
+      })
+      .catch(error => {
+        alert('Error: ' + error);  // Display error if something goes wrong with the fetch request
+      });
+    });
+  </script>
 </body>
 </html>

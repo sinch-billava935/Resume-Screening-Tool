@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import os
+from resume_parse import extract_name, extract_email, extract_phone, extract_skills, extract_text_from_docx
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -45,18 +46,26 @@ def analyze_resume():
         if not resume or not job_role:
             return jsonify({'error': 'Resume or job role not provided.'}), 400
 
-        # Example logic for processing the resume and job role
-        parsed_info = {
-            'name': 'John Doe',  # Replace with actual parsed data
-            'email': 'johndoe@example.com',
-            'job_role': job_role,
-            'age': 30,
-            'score': 85,  # Replace with actual calculated score
-            'skills': {'Python': 80, 'Machine Learning': 70},  # Replace with actual skill analysis
-            'job_requirements': {'Python': 90, 'Machine Learning': 80}  # Replace with actual job requirements
+        # Extract text from resume
+        resume_text = extract_text_from_docx(resume)
+
+        # Broad skill set for matching
+        skills_list = [
+            'Python', 'Java', 'SQL', 'AWS', 'Machine Learning', 'Data Science', 'C++', 'HTML', 'CSS', 
+            'JavaScript', 'React', 'Angular', 'Node.js', 'Spring Boot', 'Hibernate', 'JPA', 'REST APIs',
+            'SOAP', 'MongoDB', 'MySQL', 'PostgreSQL', 'Docker', 'Kubernetes', 'CI/CD', 'Jenkins', 'Git'
+        ]
+
+        # Analyze resume
+        resume_info = {
+            'name': extract_name(resume_text),
+            'email': extract_email(resume_text),
+            'phone': extract_phone(resume_text),  # Include phone number
+            'skills': extract_skills(resume_text, skills_list),  # Include skills
+            'job_role': job_role
         }
 
-        return jsonify(parsed_info)
+        return jsonify(resume_info)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500

@@ -1,86 +1,40 @@
-// Handle Form Submission
-document.getElementById("resumeForm").addEventListener("submit", function (event) {
+document.getElementById('uploadForm').addEventListener('submit', function(event) {
   event.preventDefault();
 
-  const fileInput = document.getElementById("resumeUpload").files[0];
-  const jobRole = document.getElementById("jobRole").value;
+  var formData = new FormData();
+  var resumeFile = document.getElementById('resume').files[0];
+  var jobRole = document.getElementById('job_role').value;
 
-  if (!fileInput || !jobRole) {
-    alert("Please upload a resume and specify a job role.");
-    return;
-  }
+  formData.append('resume', resumeFile);
+  formData.append('job_role', jobRole);
 
-  const formData = new FormData();
-  formData.append("resume", fileInput);
-  formData.append("jobRole", jobRole);
-
-  fetch("/upload", {
-    method: "POST",
-    body: formData,
+  fetch('/analyze', {
+    method: 'POST',
+    body: formData
   })
-    .then((response) => response.json())
-    .then((data) => {
-      updateResults(data);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("An error occurred while processing the resume.");
-    });
-});
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      alert('Error: ' + data.error);  // Show an error alert if backend returns an error
+    } else {
+      // Populate the parsed information into the frontend
+      document.getElementById('name').textContent = data.name || 'N/A';  // Set name
+      document.getElementById('email').textContent = data.email || 'N/A';  // Set email
+      document.getElementById('parsedJobRole').textContent = data.job_role || 'N/A';  // Set job role
+      document.getElementById('phone').textContent = data.phone || 'N/A';  // Set phone number
 
-// Update Results
-function updateResults(data) {
-  // Update Basic Info
-  document.getElementById("name").innerText = data.name || "N/A";
-  document.getElementById("email").innerText = data.email || "N/A";
-  document.getElementById("parsedJobRole").innerText = data.jobRole || "N/A";
-  document.getElementById("age").innerText = data.age || "N/A";
+      // Display skills
+      document.getElementById('skills-list').textContent = data.skills ? data.skills.join(', ') : 'N/A';  // Set skills list
 
-  // Update Score
-  document.getElementById("candidateScore").innerText = data.score || "N/A";
+      // Calculate and display score (this can be customized based on your model logic)
+      var score = data.score || 0;
+      document.getElementById('candidateScore').textContent = score + "/100";  // Display score
 
-  // Update Verdict
-  const verdictMessage = data.score >= 70 ? "Candidate is Selected!" : "Candidate is Not Selected.";
-  document.getElementById("resultMessage").innerText = verdictMessage;
-
-  // Generate Graph
-  createGraph(data.skills, data.jobRequirements);
-}
-
-// Generate Graph
-function createGraph(candidateSkills, jobRequirements) {
-  const labels = Object.keys(candidateSkills);
-  const candidateData = Object.values(candidateSkills);
-  const jobData = Object.values(jobRequirements);
-
-  const data = {
-    labels: labels,
-    datasets: [
-      {
-        label: "Candidate Skills",
-        data: candidateData,
-        backgroundColor: "rgba(75, 192, 192, 0.5)",
-        borderColor: "rgba(75, 192, 192, 1)",
-      },
-      {
-        label: "Job Requirements",
-        data: jobData,
-        backgroundColor: "rgba(54, 162, 235, 0.5)",
-        borderColor: "rgba(54, 162, 235, 1)",
-      },
-    ],
-  };
-
-  const ctx = document.getElementById("resultGraph").getContext("2d");
-  new Chart(ctx, {
-    type: "bar",
-    data: data,
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: "top" },
-        title: { display: true, text: "Candidate Skills vs Job Requirements" },
-      },
-    },
+      // Display verdict based on score
+      document.getElementById('resultMessage').textContent = score >= 75 ? 'Selected' : 'Not Selected';  // Set verdict
+    }
+  })
+  .catch(error => {
+    alert('Error: ' + error);  // Show an error alert if there's a network or fetch error
   });
-}
+});
