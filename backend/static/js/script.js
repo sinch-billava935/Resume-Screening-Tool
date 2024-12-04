@@ -14,9 +14,8 @@ document.getElementById('uploadForm').addEventListener('submit', function(event)
   })
   .then(response => response.json())
   .then(data => {
-    // Check if there's an error in the response
     if (data.error) {
-      // Optionally show an error message on the page instead of alert
+      // Show error message on the page instead of alert
       document.getElementById('resultMessage').textContent = 'Error: ' + data.error;
     } else {
       // Populate the parsed information into the frontend
@@ -53,7 +52,6 @@ document.getElementById('uploadForm').addEventListener('submit', function(event)
     }
   })
   .catch(error => {
-    // Optionally display the error on the page rather than using alert
     document.getElementById('resultMessage').textContent = 'Error: ' + error.message;
   });
 });

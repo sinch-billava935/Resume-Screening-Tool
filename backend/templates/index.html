@@ -113,7 +113,7 @@
 
         // Display experience as a list
         var experienceList = data.experience ? data.experience.split('\n') : ['N/A'];
-        document.getElementById('experience-list').innerHTML = experienceList.map(item => `<li>${item}</li>`).join('');
+        document.getElementById('experience-list').innerHTML = experienceList.map(item => <li>${item}</li>).join('');
 
         // Display education without newlines
         document.getElementById('education-info').textContent = data.education 
