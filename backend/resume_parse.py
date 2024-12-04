@@ -37,13 +37,10 @@ def extract_skills(text, skills_list):
     return skills
 
 def extract_experience(text):
-    """
-    Extract experience section from the resume using keywords.
-    """
     experience_keywords = ['Experience', 'Professional Experience', 'Work History']
     pattern = r'(?i)(?:' + '|'.join(experience_keywords) + r')[:\s]?.*?(?=Education|Qualifications|Skills|$)'
     match = re.search(pattern, text, re.DOTALL)
-    return match.group(0).strip() if match else "Not Found"
+    return match.group(0).strip() if match else ""
 
 def extract_education(text):
     """
@@ -66,7 +63,7 @@ def extract_text_from_docx(file_path):
 
 # Example usage
 if __name__ == "__main__":
-    file_path = r'C:\Users\Sinchana T\Downloads\Resume_dataset\Resumes\Rashmitha R.docx'
+    file_path = r'C:\Users\siva0\Downloads\archive\Resumes\employer_mounika details.docx'
     resume_text = extract_text_from_docx(file_path)
 
     # Broad skill set for matching
