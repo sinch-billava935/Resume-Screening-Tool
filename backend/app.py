@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 import os
-from resume_parse import extract_name, extract_email, extract_phone, extract_skills, extract_text_from_docx
+from resume_parse import extract_name, extract_email, extract_phone, extract_skills, extract_experience, extract_education, extract_text_from_docx
 
 # Initialize the Flask app
 app = Flask(__name__)
 
 # Set up the folder for uploaded files
-UPLOAD_FOLDER = 'uploads'  # Folder where resumes will be saved
+UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Configure the app to allow specific file extensions
@@ -21,22 +21,6 @@ def allowed_file(filename):
 def index():
     return render_template('index.html')
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'resume' not in request.files:
-        return jsonify({"error": "No file part"}), 400
-
-    file = request.files['resume']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-
-    if file and allowed_file(file.filename):
-        filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(filename)
-        return jsonify({"message": "File uploaded successfully", "file_name": file.filename}), 200
-    else:
-        return jsonify({"error": "Invalid file format"}), 400
-
 @app.route('/analyze', methods=['POST'])
 def analyze_resume():
     try:
@@ -46,7 +30,11 @@ def analyze_resume():
         if not resume or not job_role:
             return jsonify({'error': 'Resume or job role not provided.'}), 400
 
-        # Extract text from resume
+        # Ensure the file is a .docx file
+        if not resume.filename.endswith('.docx'):
+            return jsonify({'error': 'Only .docx files are supported.'}), 400
+
+        # Extract text from the resume
         resume_text = extract_text_from_docx(resume)
 
         # Broad skill set for matching
@@ -56,19 +44,28 @@ def analyze_resume():
             'SOAP', 'MongoDB', 'MySQL', 'PostgreSQL', 'Docker', 'Kubernetes', 'CI/CD', 'Jenkins', 'Git'
         ]
 
-        # Analyze resume
+        # Analyze the resume
+        raw_experience = extract_experience(resume_text)
+        # Format the experience and remove unwanted characters
+        formatted_experience = [point.strip().replace('\xa0', ' ') for point in raw_experience.split('.') if point.strip()]
+
+        print(f"Formatted Experience: {formatted_experience}")  # Debugging: Check the structure of experience
+
         resume_info = {
             'name': extract_name(resume_text),
             'email': extract_email(resume_text),
-            'phone': extract_phone(resume_text),  # Include phone number
-            'skills': extract_skills(resume_text, skills_list),  # Include skills
-            'job_role': job_role
+            'phone': extract_phone(resume_text),
+            'skills': extract_skills(resume_text, skills_list),
+            'job_role': job_role,
+            'experience': formatted_experience,  # This should be an array of bullet points
+            'education': extract_education(resume_text)
         }
 
         return jsonify(resume_info)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

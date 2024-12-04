@@ -8,7 +8,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
 </head>
 <body>
   <header>
@@ -33,34 +32,49 @@
     </section>
 
     <!-- Results Section -->
-    <section id="results">
-      <h2>Analysis Results</h2>
+    <!-- Results Section -->
+<section id="results">
+  <h2>Analysis Results</h2>
 
-      <!-- Parsed Basic Info -->
-      <div id="basic-info">
-        <h3>Basic Information</h3>
-        <p><strong>Name:</strong> <span id="name">N/A</span></p>
-        <p><strong>Email:</strong> <span id="email">N/A</span></p>
-        <p><strong>Job Role:</strong> <span id="parsedJobRole">N/A</span></p>
-        <p><strong>Phone:</strong> <span id="phone">N/A</span></p> <!-- Display phone number -->
-      </div>
+  <!-- Parsed Basic Info -->
+  <div id="basic-info">
+    <h3>Basic Information</h3>
+    <p><strong>Name:</strong> <span id="name">N/A</span></p>
+    <p><strong>Email:</strong> <span id="email">N/A</span></p>
+    <p><strong>Job Role:</strong> <span id="parsedJobRole">N/A</span></p>
+    <p><strong>Phone:</strong> <span id="phone">N/A</span></p>
+  </div>
 
-      <!-- Skills Section -->
-      <div id="skills">
-        <h3>Skills</h3>
-        <p><span id="skills-list">N/A</span></p> <!-- Display skills -->
-      </div>
+  <!-- Skills Section -->
+  <div id="skills">
+    <h3>Skills</h3>
+    <p><span id="skills-list">N/A</span></p>
+  </div>
 
-      <!-- Candidate Score -->
-      <div id="score">
-        <h3>Score: <span id="candidateScore">N/A</span>/100</h3>
-      </div>
+  <!-- Experience Section -->
+<div id="experience">
+  <h3>Experience</h3>
+  <ul id="experience-list"></ul> <!-- Display experience as bullet points -->
+</div>
 
-      <!-- Final Verdict -->
-      <div id="verdict">
-        <h3 id="resultMessage">Verdict will appear here...</h3>
-      </div>
-    </section>
+<!-- Education Section -->
+<div id="education">
+  <h3>Education</h3>
+  <p><span id="education-info">N/A</span></p> <!-- Display education details -->
+</div>
+
+
+  <!-- Candidate Score -->
+  <div id="score">
+    <h3>Score: <span id="candidateScore">N/A</span>/100</h3>
+  </div>
+
+  <!-- Final Verdict -->
+  <div id="verdict">
+    <h3 id="resultMessage">Verdict will appear here...</h3>
+  </div>
+</section>
+
   </main>
 
   <footer>
@@ -85,28 +99,38 @@
       })
       .then(response => response.json())
       .then(data => {
-        if (data.error) {
-          alert('Error: ' + data.error);
-        } else {
-          // Populate the parsed information into the frontend
-          document.getElementById('name').textContent = data.name || 'N/A';
-          document.getElementById('email').textContent = data.email || 'N/A';
-          document.getElementById('parsedJobRole').textContent = data.job_role || 'N/A';
-          document.getElementById('phone').textContent = data.phone || 'N/A';  // Display phone number
-          
-          // Display skills
-          document.getElementById('skills-list').textContent = data.skills ? data.skills.join(', ') : 'N/A';  // Display skills
+    if (data.error) {
+        alert('Error: ' + data.error);
+    } else {
+        // Populate the parsed information into the frontend
+        document.getElementById('name').textContent = data.name || 'N/A';
+        document.getElementById('email').textContent = data.email || 'N/A';
+        document.getElementById('parsedJobRole').textContent = data.job_role || 'N/A';
+        document.getElementById('phone').textContent = data.phone || 'N/A';
 
-          // Calculate and display score (this can be customized based on your model logic)
-          var score = data.score || 0;
-          document.getElementById('candidateScore').textContent = score + "/100";
+        // Display skills
+        document.getElementById('skills-list').textContent = data.skills ? data.skills.join(', ') : 'N/A';
 
-          // Display verdict based on score
-          document.getElementById('resultMessage').textContent = score >= 75 ? 'Selected' : 'Not Selected';
-        }
-      })
+        // Display experience as a list
+        var experienceList = data.experience ? data.experience.split('\n') : ['N/A'];
+        document.getElementById('experience-list').innerHTML = experienceList.map(item => `<li>${item}</li>`).join('');
+
+        // Display education without newlines
+        document.getElementById('education-info').textContent = data.education 
+            ? data.education.replace(/\n/g, ' ') 
+            : 'N/A';
+
+        // Calculate and display score (this can be customized based on your model logic)
+        var score = data.score || 0;
+        document.getElementById('candidateScore').textContent = score + "/100";
+
+        // Display verdict based on score
+        document.getElementById('resultMessage').textContent = score >= 75 ? 'Selected' : 'Not Selected';
+    }
+})
+
       .catch(error => {
-        alert('Error: ' + error);  // Display error if something goes wrong with the fetch request
+        alert('Error: ' + error); // Display error if something goes wrong with the fetch request
       });
     });
   </script>

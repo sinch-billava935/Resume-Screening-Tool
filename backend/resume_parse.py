@@ -36,6 +36,24 @@ def extract_skills(text, skills_list):
             skills.append(skill)
     return skills
 
+def extract_experience(text):
+    """
+    Extract experience section from the resume using keywords.
+    """
+    experience_keywords = ['Experience', 'Professional Experience', 'Work History']
+    pattern = r'(?i)(?:' + '|'.join(experience_keywords) + r')[:\s]?.*?(?=Education|Qualifications|Skills|$)'
+    match = re.search(pattern, text, re.DOTALL)
+    return match.group(0).strip() if match else "Not Found"
+
+def extract_education(text):
+    """
+    Extract education section from the resume using keywords.
+    """
+    education_keywords = ['Education', 'Educational Background', 'Academic Qualifications']
+    pattern = r'(?i)(?:' + '|'.join(education_keywords) + r')[:\s]?.*?(?=Experience|Professional Experience|Skills|$)'
+    match = re.search(pattern, text, re.DOTALL)
+    return match.group(0).strip() if match else "Not Found"
+
 def extract_text_from_docx(file_path):
     """
     Extract text from a .docx resume file using python-docx.
@@ -45,3 +63,26 @@ def extract_text_from_docx(file_path):
     for para in doc.paragraphs:
         text.append(para.text)
     return '\n'.join(text)
+
+# Example usage
+if __name__ == "__main__":
+    file_path = r'C:\Users\Sinchana T\Downloads\Resume_dataset\Resumes\Rashmitha R.docx'
+    resume_text = extract_text_from_docx(file_path)
+
+    # Broad skill set for matching
+    skills_list = [
+        'Python', 'Java', 'SQL', 'AWS', 'Machine Learning', 'Data Science', 'C++', 'HTML', 'CSS', 
+        'JavaScript', 'React', 'Angular', 'Node.js', 'Spring Boot', 'Hibernate', 'JPA', 'REST APIs',
+        'SOAP', 'MongoDB', 'MySQL', 'PostgreSQL', 'Docker', 'Kubernetes', 'CI/CD', 'Jenkins', 'Git'
+    ]
+
+    resume_info = {
+        'name': extract_name(resume_text),
+        'email': extract_email(resume_text),
+        'phone': extract_phone(resume_text),
+        'skills': extract_skills(resume_text, skills_list),
+        'experience': extract_experience(resume_text),
+        'education': extract_education(resume_text)
+    }
+
+    print(resume_info)
