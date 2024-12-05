@@ -1,5 +1,21 @@
-import re
+import pdfplumber
 from docx import Document
+import re
+
+def extract_text_from_file(file):
+    """
+    Extract text from a .docx or .pdf resume file.
+    """
+    if file.filename.endswith('.docx'):
+        doc = Document(file)
+        text = [para.text for para in doc.paragraphs]
+        return '\n'.join(text)
+    elif file.filename.endswith('.pdf'):
+        with pdfplumber.open(file) as pdf:
+            pages = [page.extract_text() for page in pdf.pages]
+            return '\n'.join(pages)
+    else:
+        raise ValueError("Unsupported file format. Only .docx and .pdf are supported.")
 
 def extract_name(text):
     """
@@ -54,20 +70,11 @@ def extract_education(text):
     match = re.search(pattern, text, re.DOTALL)
     return match.group(0).strip() if match else "Not Found"
 
-def extract_text_from_docx(file_path):
-    """
-    Extract text from a .docx resume file using python-docx.
-    """
-    doc = Document(file_path)
-    text = []
-    for para in doc.paragraphs:
-        text.append(para.text)
-    return '\n'.join(text)
 
 # Example usage
 if __name__ == "__main__":
     file_path = r'C:\Users\Sinchana T\Downloads\Resume_dataset\Resumes\Rashmitha R.docx'
-    resume_text = extract_text_from_docx(file_path)
+    resume_text = extract_text_from_file(file_path)
 
     # Broad skill set for matching
     skills_list = [

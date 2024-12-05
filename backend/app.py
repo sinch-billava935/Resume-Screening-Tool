@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import os
-from resume_parse import extract_name, extract_email, extract_phone, extract_skills, extract_experience, extract_education, extract_text_from_docx
+from resume_parse import extract_name, extract_email, extract_phone, extract_skills, extract_experience, extract_education, extract_text_from_file
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -11,7 +11,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Configure the app to allow specific file extensions
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx', 'txt'}
+app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx'}
 
 # Helper function to check if a file has a valid extension
 def allowed_file(filename):
@@ -30,12 +30,12 @@ def analyze_resume():
         if not resume or not job_role:
             return jsonify({'error': 'Resume or job role not provided.'}), 400
 
-        # Ensure the file is a .docx file
-        if not resume.filename.endswith('.docx'):
-            return jsonify({'error': 'Only .docx files are supported.'}), 400
+        # Ensure the file is either .docx or .pdf
+        if not allowed_file(resume.filename):
+            return jsonify({'error': 'Only .docx and .pdf files are supported.'}), 400
 
         # Extract text from the resume
-        resume_text = extract_text_from_docx(resume)
+        resume_text = extract_text_from_file(resume)
 
         # Broad skill set for matching
         skills_list = [
@@ -65,7 +65,6 @@ def analyze_resume():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
