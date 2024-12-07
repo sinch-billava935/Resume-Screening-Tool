@@ -15,23 +15,23 @@ document.getElementById('uploadForm').addEventListener('submit', function(event)
   .then(response => response.json())
   .then(data => {
     if (data.error) {
-      // Show error message on the page instead of alert
-      document.getElementById('resultMessage').textContent = 'Error: ' + data.error;
+      alert('Error: ' + data.error);
     } else {
-      // Populate the parsed information into the frontend
+      // Populate parsed information into the frontend
       document.getElementById('name').textContent = data.name || 'N/A';
       document.getElementById('email').textContent = data.email || 'N/A';
-      document.getElementById('parsedJobRole').textContent = data.job_role || 'N/A';
+      document.getElementById('parsedJobRole').textContent = data.job_role || 'N/A';  // Display the job role here
       document.getElementById('phone').textContent = data.phone || 'N/A';
 
-      // Display skills
-      document.getElementById('skills-list').textContent = data.skills ? data.skills.join(', ') : 'N/A';
+      // Ensure data.skills is an array before using .join
+      const skillsList = data.skills && Array.isArray(data.skills) ? data.skills.join(', ') : 'N/A';
+      document.getElementById('skills-list').textContent = skillsList;
 
-      // Display experience as bullet points
+      // Display experience as a list
       var experienceList = document.getElementById('experience-list');
       experienceList.innerHTML = '';  // Clear previous content
       if (Array.isArray(data.experience) && data.experience.length > 0) {
-        data.experience.forEach(point => {
+        data.experience.forEach((point) => {
           var li = document.createElement('li');
           li.textContent = point;
           experienceList.appendChild(li);
@@ -43,15 +43,55 @@ document.getElementById('uploadForm').addEventListener('submit', function(event)
       // Display education
       document.getElementById('education-info').textContent = data.education || 'N/A';
 
-      // Calculate and display score (this can be customized based on your model logic)
-      var score = data.score || 0;
-      document.getElementById('candidateScore').textContent = score + "/100";
+      // Display qualification graph
+      displayQualificationGraph(data.skill_score, data.education_score, data.experience_score, data.job_requirements);
 
-      // Display verdict based on score
-      document.getElementById('resultMessage').textContent = score >= 75 ? 'Selected' : 'Not Selected';
+      // Display overall score and verdict
+      document.getElementById('candidateScore').textContent = `${data.overall_score}/100`;
+      document.getElementById('resultMessage').textContent = data.verdict;
     }
   })
   .catch(error => {
-    document.getElementById('resultMessage').textContent = 'Error: ' + error.message;
+    alert('Error: ' + error.message); // Handle fetch errors
   });
 });
+
+// Function to display qualification comparison graph
+function displayQualificationGraph(skillScore, educationScore, experienceScore, jobRequirements) {
+  const ctx = document.getElementById('qualificationChart').getContext('2d');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Skills', 'Education', 'Experience'],
+      datasets: [
+        {
+          label: 'Candidate Qualification',
+          data: [skillScore, educationScore, experienceScore],
+          borderColor: 'blue',
+          backgroundColor: 'rgba(0, 0, 255, 0.3)',
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: 'Job Requirements',
+          data: jobRequirements,
+          borderColor: 'red',
+          backgroundColor: 'rgba(255, 0, 0, 0.3)',
+          fill: true,
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: { display: true, text: 'Qualification vs Job Requirements' }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 100 }
+      }
+    }
+  });
+}
