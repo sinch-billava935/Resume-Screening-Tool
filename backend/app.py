@@ -25,7 +25,7 @@ def index():
 def analyze_resume():
     try:
         resume = request.files.get('resume')
-        job_role = request.form.get('job_role')
+        job_role = request.form.get('job_role')  # Getting the job role entered by the user
 
         if not resume or not job_role:
             return jsonify({'error': 'Resume or job role not provided.'}), 400
@@ -44,21 +44,39 @@ def analyze_resume():
             'SOAP', 'MongoDB', 'MySQL', 'PostgreSQL', 'Docker', 'Kubernetes', 'CI/CD', 'Jenkins', 'Git'
         ]
 
-        # Analyze the resume
-        raw_experience = extract_experience(resume_text)
-        # Format the experience and remove unwanted characters
-        formatted_experience = [point.strip().replace('\xa0', ' ') for point in raw_experience.split('.') if point.strip()]
+        # Extract skills from resume text
+        matched_skills = extract_skills(resume_text, skills_list)
 
-        print(f"Formatted Experience: {formatted_experience}")  # Debugging: Check the structure of experience
+        # Extract experience and format it as a list of bullet points
+        raw_experience = extract_experience(resume_text)
+        formatted_experience = [point.strip() for point in raw_experience.split('.') if point.strip()]
+
+        # Extract education details
+        education_info = extract_education(resume_text)
+
+        # Example placeholders for score calculations (can be enhanced later)
+        skill_score = len(matched_skills) * 10  # Assuming each skill matched adds 10 points
+        experience_score = 80  # Placeholder score, can be customized
+        education_score = 90  # Placeholder score, can be customized
+
+        # Calculate overall score and verdict
+        overall_score = (skill_score + experience_score + education_score) / 3
+        verdict = "Selected" if overall_score >= 75 else "Not Selected"
 
         resume_info = {
             'name': extract_name(resume_text),
             'email': extract_email(resume_text),
             'phone': extract_phone(resume_text),
-            'skills': extract_skills(resume_text, skills_list),
-            'job_role': job_role,
-            'experience': formatted_experience,  # This should be an array of bullet points
-            'education': extract_education(resume_text)
+            'job_role': job_role,  # Include the job role in the response
+            'skills': matched_skills,  # Skills as a list
+            'experience': formatted_experience,  # Experience as a list
+            'education': education_info,  # Education as a string
+            'skill_score': skill_score,
+            'experience_score': experience_score,
+            'education_score': education_score,
+            'overall_score': overall_score,
+            'verdict': verdict,
+            'job_requirements': [90, 100, 85],  # Job requirement thresholds for Skills, Education, Experience
         }
 
         return jsonify(resume_info)
