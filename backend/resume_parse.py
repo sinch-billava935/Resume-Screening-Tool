@@ -72,7 +72,7 @@ def extract_education(text):
 
 
 # Example usage
-if __name__ == "__main__":
+if __name__ == "_main_":
     file_path = r'C:\Users\Sinchana T\Downloads\Resume_dataset\Resumes\Rashmitha R.docx'
     resume_text = extract_text_from_file(file_path)
 

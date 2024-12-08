@@ -1,57 +1,98 @@
-document.getElementById('uploadForm').addEventListener('submit', function(event) {
-  event.preventDefault();
+// Handle Form Submission
+document.getElementById("resumeForm").addEventListener("submit", function (event) {
+  event.preventDefault(); // Prevent default form submission
 
-  var formData = new FormData();
-  var resumeFile = document.getElementById('resume').files[0];
-  var jobRole = document.getElementById('job_role').value;
+  // Get user inputs
+  const fileInput = document.getElementById("resumeUpload").files[0];
+  const jobRole = document.getElementById("jobRole").value;
 
-  formData.append('resume', resumeFile);
-  formData.append('job_role', jobRole);
+  if (!fileInput || !jobRole) {
+    alert("Please upload a resume and specify a job role.");
+    return;
+  }
 
-  fetch('/analyze', {
-    method: 'POST',
-    body: formData
+  const formData = new FormData();
+  formData.append("resume", fileInput);
+  formData.append("job_role", jobRole);
+
+  // Send form data to the backend
+  fetch("/analyze", {
+    method: "POST",
+    body: formData,
   })
-  .then(response => response.json())
-  .then(data => {
-    if (data.error) {
-      // Show error message on the page instead of alert
-      document.getElementById('resultMessage').textContent = 'Error: ' + data.error;
-    } else {
-      // Populate the parsed information into the frontend
-      document.getElementById('name').textContent = data.name || 'N/A';
-      document.getElementById('email').textContent = data.email || 'N/A';
-      document.getElementById('parsedJobRole').textContent = data.job_role || 'N/A';
-      document.getElementById('phone').textContent = data.phone || 'N/A';
-
-      // Display skills
-      document.getElementById('skills-list').textContent = data.skills ? data.skills.join(', ') : 'N/A';
-
-      // Display experience as bullet points
-      var experienceList = document.getElementById('experience-list');
-      experienceList.innerHTML = '';  // Clear previous content
-      if (Array.isArray(data.experience) && data.experience.length > 0) {
-        data.experience.forEach(point => {
-          var li = document.createElement('li');
-          li.textContent = point;
-          experienceList.appendChild(li);
-        });
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.error) {
+        alert(data.error);
       } else {
-        experienceList.innerHTML = '<li>N/A</li>';
+        updateResults(data);
       }
-
-      // Display education
-      document.getElementById('education-info').textContent = data.education || 'N/A';
-
-      // Calculate and display score (this can be customized based on your model logic)
-      var score = data.score || 0;
-      document.getElementById('candidateScore').textContent = score + "/100";
-
-      // Display verdict based on score
-      document.getElementById('resultMessage').textContent = score >= 75 ? 'Selected' : 'Not Selected';
-    }
-  })
-  .catch(error => {
-    document.getElementById('resultMessage').textContent = 'Error: ' + error.message;
-  });
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("An error occurred while processing the resume.");
+    });
 });
+
+// Update Results
+function updateResults(data) {
+  // Update Basic Info
+  document.getElementById("name").innerText = data.name || "N/A";
+  document.getElementById("email").innerText = data.email || "N/A";
+  document.getElementById("parsedJobRole").innerText = data.job_role || "N/A";
+  document.getElementById("age").innerText = data.age || "N/A";
+
+  // Update Score
+  document.getElementById("candidateScore").innerText = data.score || "N/A";
+
+  // Update Verdict
+  const verdictMessage = data.score >= 70 ? "Candidate is Selected!" : "Candidate is Not Selected.";
+  document.getElementById("resultMessage").innerText = verdictMessage;
+
+  // Generate Graph
+  if (data.skills && data.job_requirements) {
+    createGraph(data.skills, data.job_requirements);
+  } else {
+    alert("No data available for graph visualization.");
+  }
+}
+
+// Generate Graph
+function createGraph(candidateSkills, jobRequirements) {
+  const labels = Object.keys(candidateSkills);
+  const candidateData = Object.values(candidateSkills);
+  const jobData = Object.values(jobRequirements);
+
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: "Candidate Skills",
+        data: candidateData,
+        backgroundColor: "rgba(75, 192, 192, 0.5)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+      },
+      {
+        label: "Job Requirements",
+        data: jobData,
+        backgroundColor: "rgba(54, 162, 235, 0.5)",
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const ctx = document.getElementById("resultGraph").getContext("2d");
+  new Chart(ctx, {
+    type: "bar",
+    data: data,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "top" },
+        title: { display: true, text: "Candidate Skills vs Job Requirements" },
+      },
+    },
+  });
+}
