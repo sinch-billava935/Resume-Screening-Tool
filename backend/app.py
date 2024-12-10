@@ -13,6 +13,59 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx'}
 
+job_role_requirements = {
+    'Software Developer': {
+        'skills': ['Python', 'Java', 'C++', 'JavaScript', 'Spring Boot', 'HTML', 'CSS'],
+        'experience': 2,  # Minimum years of experience
+        'education': 'B.Tech in Computer Science or IT'
+    },
+    'Data Scientist': {
+        'skills': ['Python', 'R', 'SQL', 'Machine Learning', 'Data Analysis', 'Pandas', 'TensorFlow'],
+        'experience': 2,
+        'education': 'B.Tech in Computer Science or M.Sc. in Data Science'
+    },
+    'Database Administrator': {
+        'skills': ['SQL', 'MySQL', 'PostgreSQL', 'MongoDB', 'Database Optimization', 'Database Security'],
+        'experience': 3,
+        'education': 'B.Tech in Computer Science or IT'
+    },
+    'DevOps Engineer': {
+        'skills': ['AWS', 'Docker', 'Kubernetes', 'CI/CD', 'Terraform', 'Jenkins', 'Cloud Computing'],
+        'experience': 2,
+        'education': 'B.Tech in Computer Science or IT'
+    },
+    'Machine Learning Engineer': {
+        'skills': ['Python', 'TensorFlow', 'PyTorch', 'Scikit-learn', 'Deep Learning', 'Natural Language Processing'],
+        'experience': 3,
+        'education': 'B.Tech in Computer Science or M.Sc. in Machine Learning'
+    },
+    'Cloud Engineer': {
+        'skills': ['AWS', 'Azure', 'Google Cloud', 'Serverless Architecture', 'Cloud Security', 'DevOps'],
+        'experience': 2,
+        'education': 'B.Tech in Computer Science or IT'
+    },
+    'Network Engineer': {
+        'skills': ['Routing', 'Switching', 'Firewall', 'VPN', 'Networking Protocols', 'Cisco', 'LAN/WAN'],
+        'experience': 2,
+        'education': 'B.Tech in Electronics/Telecommunication or Computer Science'
+    },
+    'Cyber Security Analyst': {
+        'skills': ['Penetration Testing', 'Firewalls', 'Incident Response', 'Cryptography', 'Vulnerability Assessment'],
+        'experience': 2,
+        'education': 'B.Tech in Computer Science or M.Sc. in Cyber Security'
+    },
+    'Project Manager': {
+        'skills': ['Project Planning', 'Agile', 'Scrum', 'Stakeholder Management', 'Risk Management', 'Leadership'],
+        'experience': 4,  # Project managers often require more years of experience
+        'education': 'B.Tech or MBA in Project Management'
+    },
+    'Full Stack Developer': {
+        'skills': ['React', 'Node.js', 'Express.js', 'MongoDB', 'HTML/CSS', 'JavaScript', 'MySQL'],
+        'experience': 2,
+        'education': 'B.Tech in Computer Science or IT'
+    }
+}
+
 # Helper function to check if a file has a valid extension
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -86,3 +139,4 @@ def analyze_resume():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
