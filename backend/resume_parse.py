@@ -50,42 +50,21 @@ def extract_experience(text):
     return match.group(0).strip() if match else "Not Found"
 
 
-
 def extract_education(text):
-    """ Extract only the education section from the resume. """
+    """Extract the education section from the resume."""
     education_keywords = ['Education', 'Educational Background', 'Academic Qualifications']
-    # Pattern to capture content that follows education-related keywords
-    # The key change is that the regex specifically looks for content related to education and stops before encountering certifications or internships.
-    pattern = r'(?i)(?:' + '|'.join(education_keywords) + r')[:\s]?.*?(?=Certifications|Internships|Experience|Skills|$)'
+    # Improved pattern to capture content that follows education-related keywords
+    pattern = r'(?i)(?:' + '|'.join(education_keywords) + r')[:\s]?([\s\S]*?)(?=Certifications|Internships|Experience|Skills|$)'
     
     match = re.search(pattern, text, re.DOTALL)
+    if match:
+        # Clean the extracted education text
+        education_text = match.group(1).strip()
+        # Optionally, you could add additional cleaning steps here to format the result
+        return education_text
+    else:
+        return ''
+
     
     # Return the matched education section, or 'Not Found' if no match is found
     return match.group(0).strip() if match else "Not Found"
-<<<<<<< HEAD
-
-
-# Example usage
-if __name__ == "_main_":
-    file_path = r'C:\Users\Sinchana T\Downloads\Resume_dataset\Resumes\Rashmitha R.docx'
-    resume_text = extract_text_from_file(file_path)
-
-    # Broad skill set for matching
-    skills_list = [
-        'Python', 'Java', 'SQL', 'AWS', 'Machine Learning', 'Data Science', 'C++', 'HTML', 'CSS', 
-        'JavaScript', 'React', 'Angular', 'Node.js', 'Spring Boot', 'Hibernate', 'JPA', 'REST APIs',
-        'SOAP', 'MongoDB', 'MySQL', 'PostgreSQL', 'Docker', 'Kubernetes', 'CI/CD', 'Jenkins', 'Git'
-    ]
-
-    resume_info = {
-        'name': extract_name(resume_text),
-        'email': extract_email(resume_text),
-        'phone': extract_phone(resume_text),
-        'skills': extract_skills(resume_text, skills_list),
-        'experience': extract_experience(resume_text),
-        'education': extract_education(resume_text)
-    }
-
-    print(resume_info)
-=======
->>>>>>> 54dda24779567580eecf4d361aac8b45fe727649
