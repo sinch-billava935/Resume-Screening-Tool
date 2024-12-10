@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Resume Screening Tool</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 <body>
+  <!-- Header Section -->
   <header>
     <h1>Resume Screening Tool</h1>
     <nav>
@@ -18,20 +21,25 @@
     </nav>
   </header>
 
-  <main>
+  <main class="container">
     <!-- Upload Section -->
     <section id="upload">
-      <h2>Upload Resume</h2>
+      <h2 class="text-center mb-4">Upload Resume</h2>
       <form id="uploadForm" enctype="multipart/form-data">
-        <label for="resume">Select Resume:</label>
-        <input type="file" name="resume" id="resume" accept=".docx,.pdf" required>
-        <label for="job_role">Job Role:</label>
-        <input type="text" name="job_role" id="job_role" placeholder="Enter desired job role" required>
-        <button type="submit">Upload and Analyze</button>
+        <div class="form-group mb-3">
+          <label for="resume">Select Resume:</label>
+          <input type="file" name="resume" id="resume" class="form-control" accept=".docx,.pdf" required>
+        </div>
+        <div class="form-group mb-3">
+          <label for="job_role">Job Role:</label>
+          <input type="text" name="job_role" id="job_role" class="form-control" placeholder="Enter desired job role" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload and Analyze</button>
       </form>
     </section>
 
     <!-- Results Section -->
+<<<<<<< HEAD
     <section id="results">
       <h2>Analysis Results</h2>
 
@@ -48,41 +56,64 @@
       <div id="skills">
         <h3>Skills</h3>
         <p><span id="skills-list">N/A</span></p>
+=======
+    <section id="results" class="mt-5">
+      <h2 class="text-center mb-4">Analysis Results</h2>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Basic Information</h5>
+          <p><strong>Name:</strong> <span id="name">N/A</span></p>
+          <p><strong>Email:</strong> <span id="email">N/A</span></p>
+          <p><strong>Job Role:</strong> <span id="parsedJobRole">N/A</span></p>
+          <p><strong>Phone:</strong> <span id="phone">N/A</span></p>
+        </div>
+>>>>>>> c008e1252443662fd6b03f3b8a13c5d6d0ba0b5e
       </div>
 
-      <!-- Experience Section -->
-      <div id="experience">
-        <h3>Experience</h3>
-        <ul id="experience-list"></ul>
+      <div class="card mt-3">
+        <div class="card-body">
+          <h5 class="card-title">Skills</h5>
+          <p><span id="skills-list">N/A</span></p>
+        </div>
       </div>
 
-      <!-- Education Section -->
-      <div id="education">
-        <h3>Education</h3>
-        <p><span id="education-info">N/A</span></p>
+      <div class="card mt-3">
+        <div class="card-body">
+          <h5 class="card-title">Experience</h5>
+          <ul id="experience-list" class="list-group"></ul>
+        </div>
       </div>
 
-      
+      <div class="card mt-3">
+        <div class="card-body">
+          <h5 class="card-title">Education</h5>
+          <p><span id="education-info">N/A</span></p>
+        </div>
+      </div>
 
-      <!-- Visualization for Qualification vs Job Requirements -->
-      <div>
+      <div class="mt-4">
         <h3>Qualification vs Job Requirements</h3>
         <canvas id="qualificationChart" width="400" height="200"></canvas>
       </div>
 
-      <!-- Score and Verdict -->
-      <div id="score-verdict">
-        <h3>Final Results</h3>
-        <p><strong>Score:</strong> <span id="candidateScore">N/A</span></p>
-        <p><strong>Verdict:</strong> <span id="resultMessage">N/A</span></p>
+      <div class="card mt-4">
+        <div class="card-body">
+          <h5 class="card-title">Final Results</h5>
+          <p><strong>Score:</strong> <span id="candidateScore">N/A</span></p>
+          <p><strong>Verdict:</strong> <span id="resultMessage">N/A</span></p>
+        </div>
       </div>
     </section>
   </main>
 
+  <!-- Footer Section -->
   <footer>
     <p>© 2024 Resume Screening Tool | Designed by Team</p>
   </footer>
 
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
