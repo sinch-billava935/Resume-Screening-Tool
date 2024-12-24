@@ -11,10 +11,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx'}
 
-<<<<<<< HEAD
 # Job role-specific requirements
-=======
->>>>>>> c008e1252443662fd6b03f3b8a13c5d6d0ba0b5e
 job_role_requirements = {
     'Software Developer': {
         'skills': ['Python', 'Java', 'C++', 'JavaScript', 'Spring Boot', 'HTML', 'CSS'],
@@ -51,22 +48,14 @@ job_role_requirements = {
         'experience': 2,
         'education': 'B.Tech in Electronics/Telecommunication or Computer Science'
     },
-<<<<<<< HEAD
     '   ': {
-=======
-    'Cyber Security Analyst': {
->>>>>>> c008e1252443662fd6b03f3b8a13c5d6d0ba0b5e
         'skills': ['Penetration Testing', 'Firewalls', 'Incident Response', 'Cryptography', 'Vulnerability Assessment'],
         'experience': 2,
         'education': 'B.Tech in Computer Science or M.Sc. in Cyber Security'
     },
     'Project Manager': {
         'skills': ['Project Planning', 'Agile', 'Scrum', 'Stakeholder Management', 'Risk Management', 'Leadership'],
-<<<<<<< HEAD
         'experience': 5,  # Project managers often require more years of experience
-=======
-        'experience': 4,  # Project managers often require more years of experience
->>>>>>> c008e1252443662fd6b03f3b8a13c5d6d0ba0b5e
         'education': 'B.Tech or MBA in Project Management'
     },
     'Full Stack Developer': {
@@ -76,10 +65,6 @@ job_role_requirements = {
     }
 }
 
-<<<<<<< HEAD
-=======
-# Helper function to check if a file has a valid extension
->>>>>>> c008e1252443662fd6b03f3b8a13c5d6d0ba0b5e
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
