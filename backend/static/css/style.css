@@ -48,14 +48,26 @@ form input, form button {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-form button {
-  background-color: #9370DB;
-  color: white;
+/* Custom Button for Lavender Theme */
+.btn-custom {
+  background-color: #6d08a8cb; /* Lavender background */
+  color: white; /* White text */
   font-weight: bold;
+  border: none;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-form button:hover {
-  background-color: #4B0082;
+.btn-custom:hover {
+  background-color: #7150b4; /* Slightly darker lavender */
+  transform: scale(1.05); /* Subtle hover effect */
+  color: white;
+}
+
+.btn-custom:active {
+  background-color: #7A52C2; /* Even darker lavender for active state */
+  transform: scale(0.95); /* Pressed effect */
 }
 
 /* Card Styling */
